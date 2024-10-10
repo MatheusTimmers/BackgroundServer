@@ -69,8 +69,6 @@ void BackgroundServer::StartServer() {
 
     n_index++; // Passa a linha em branco
 
-    cout << "DEBUG: " << T << " TP: " << TP << " TA: " << TA << endl;
-
     this->Run(T);
   }
 }
@@ -99,15 +97,24 @@ void BackgroundServer::Run(int simulation_time) {
   }
 
   Task *current_task = nullptr;
-  char current_task_symbol = '.'; // Inicia como ocioso
-  char last_task_symbol = '.';    // Para rastrear trocas de contexto
+  int last_comp = 0;           // Para rastrear trocas de contexto
+  char last_task_symbol = '.'; // Para rastrear trocas de contexto
 
   for (int t = 0; t < simulation_time; ++t) {
-    current_task = nullptr;
     // Como a lista esta ordenada, pega a primeira tarefa que ainda tem
     // computação para rodar
+    current_task = nullptr;
     for (auto &task : tasks) {
       if (task.remaining_time > 0) {
+        // incrementa troca de contextos
+        if (last_task_symbol != task.symbol) {
+          context_switches++;
+
+          if (last_comp > 0) {
+            preemptions++;
+          }
+        }
+
         if (task.is_periodic) {
           current_task = &task;
           break;
@@ -127,33 +134,16 @@ void BackgroundServer::Run(int simulation_time) {
         } else {
           this->grid_.append(1, current_task->symbol);
         }
-
-        // cout << "DEBUG: " << current_task->symbol
-        //    << " period: " << current_task->period
-        //  << " remaining comp: " << current_task->remaining_time << endl;
-
       } else {
         // aperiodica só printa
         this->grid_.append(1, current_task->symbol);
       }
       current_task->remaining_time--;
-      cout << "DEBUG: " << current_task->symbol << " "
-           << current_task->remaining_time << endl;
+      last_task_symbol = current_task->symbol;
+      last_comp = current_task->remaining_time;
     } else {
       this->grid_.append(1, '.');
     }
-
-    if (current_task_symbol != last_task_symbol) {
-      context_switches++;
-      // Verifica se houve preempção
-      if (last_task_symbol != '.' && current_task_symbol != '.' &&
-          current_task_symbol != last_task_symbol) {
-        preemptions++;
-      }
-    }
-
-    // Atualiza o símbolo da tarefa atual
-    last_task_symbol = current_task_symbol;
 
     // Reload
     for (auto &task : tasks) {
@@ -166,12 +156,19 @@ void BackgroundServer::Run(int simulation_time) {
   }
 
   cout << this->grid_ << endl;
-
-  cout << preemptions << " " << context_switches << endl;
+  cout << preemptions + 1 << " " << context_switches + 1 << endl;
 
   for (const auto &task : tasks) {
-    int execution_time = task.computation_time - task.remaining_time;
-    int waiting_time = simulation_time - execution_time;
+    int execution_time = 0;
+    int waiting_time = 0;
+    if (task.is_periodic) {
+      execution_time = task.computation_time * (simulation_time / task.period);
+      waiting_time = simulation_time - execution_time;
+    } else {
+      execution_time = task.computation_time * (simulation_time / task.period);
+      waiting_time = simulation_time - execution_time;
+    }
+
     cout << execution_time << " " << waiting_time << endl;
   }
 }
@@ -182,8 +179,6 @@ bool BackgroundServer::ReadPeriodicTasks(size_t &n_index, vector<string> &lines,
     if (n_index >= lines.size()) {
       return false;
     }
-
-    cout << "Debug: " << lines[n_index] << endl;
 
     istringstream task(lines[n_index]);
 
@@ -203,8 +198,6 @@ bool BackgroundServer::ReadAperiodicTasks(size_t &n_index,
     if (n_index >= lines.size()) {
       return false;
     }
-
-    cout << "Debug: " << lines[n_index] << endl;
 
     istringstream task(lines[n_index]);
 
