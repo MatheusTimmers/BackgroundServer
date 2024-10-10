@@ -10,7 +10,7 @@ bool RmSort(PeriodicTask t1, PeriodicTask t2) {
 };
 
 BackgroundServer::BackgroundServer(string input_file) {
-  this->file_ = make_unique<FileReader>("test/teste.txt");
+  this->file_ = make_unique<FileReader>(input_file);
   this->grid_ = "";
   this->time_ = 0;
 }
@@ -70,6 +70,8 @@ void BackgroundServer::StartServer() {
     n_index++; // Passa a linha em branco
 
     this->Run(T);
+
+    cout << endl;
   }
 }
 
