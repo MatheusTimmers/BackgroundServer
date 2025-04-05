@@ -1,27 +1,27 @@
 #ifndef _BACKGROUND_SERVER_HPP_
 #define _BACKGROUND_SERVER_HPP_
 
-#include "../enums/enums.cpp"
-#include "../file_reader/FileReader.hpp"
-#include <string>
+#include "../task/Task.hpp"
 #include <vector>
-
-using namespace std;
+#include <string>
 
 class BackgroundServer {
 private:
-  unique_ptr<FileReader> file_;
-  int time_;
-  string grid_;
+  std::string grid_;
+  std::vector<Task> periodic_tasks_;
 
-  vector<PeriodicTask> periodic_tasks_;
-
+  Task* EDFSort();
   void Run(int simulation_time);
 
   void ReadPeriodicTasks(int nTask);
+  void ReloadPeriodicTasks(int sim_time);
+  std::string GetTestUtilization();
+
+  void AddTaskToGrid(Task *current_task, int sim_time);
+
+  void PrintResult(int context_switches, int preemptions);
 
 public:
-  BackgroundServer(string input_file);
   void StartServer();
 };
 
