@@ -19,8 +19,5 @@ struct Task {
   int absolute_period;
   int absolute_deadline;
   // aux
-  int remaining_time;
-  // aperiodic
-  int arrival_time;
-  bool is_periodic;
+  int remaining_computation;
 };
