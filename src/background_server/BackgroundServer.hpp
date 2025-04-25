@@ -14,7 +14,7 @@ private:
   void Run(int simulation_time);
 
   void ReadPeriodicTasks(int nTask);
-  void ReloadPeriodicTasks(int sim_time);
+  void ReloadPeriodicTasks(int sim_time, char *last_task_symbol);
   std::string GetTestUtilization();
 
   void AddTaskToGrid(Task *current_task, int sim_time);

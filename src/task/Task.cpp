@@ -18,7 +18,7 @@ void Task::Reload(int sim_time) {
   if (this->absolute_period == sim_time) {
     this->remaining_computation = this->computation_time;
     this->absolute_period += this->period;
-    this->absolute_deadline += this->deadline;
+    this->absolute_deadline += + this->period;
   }
 }
 
