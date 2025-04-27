@@ -62,7 +62,7 @@ void BackgroundServer::Run(int simulation_time) {
       if (last_task_symbol != '.') {
         context_switches++;
         last_task_symbol = '.';
-		preemptions++;
+        preemptions++;
       }
     }
 
@@ -91,7 +91,8 @@ void BackgroundServer::ReloadPeriodicTasks(int sim_time, char *last_task_symbol)
   for (auto &task : this->periodic_tasks_) {
     // Se o periodo absoluto for igual ao simulation_time e 
     // last_task_symbol for igual ao symbol da tarefa
-    // significa que teve troca de contexto entre periodos
+    // significa que acabou o periodo de uma tarefa e ela foi a ultima a executar
+    // limpa last_task_symbol
     if ((task.absolute_period == sim_time) && (task.symbol == *last_task_symbol)) {
       *last_task_symbol = ' ';
 	}
