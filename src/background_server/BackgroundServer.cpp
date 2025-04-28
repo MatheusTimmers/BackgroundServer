@@ -8,7 +8,6 @@ using namespace std;
 
 void BackgroundServer::StartServer() {
   int numTask, SimTime;
-  size_t n_index = 0;
 
   while (true) {
     cin >> numTask >> SimTime;
@@ -90,12 +89,13 @@ void BackgroundServer::ReadPeriodicTasks(int nTask) {
 void BackgroundServer::ReloadPeriodicTasks(int sim_time, char *last_task_symbol) {
   for (auto &task : this->periodic_tasks_) {
     // Se o periodo absoluto for igual ao simulation_time e 
-    // last_task_symbol for igual ao symbol da tarefa
+    // last_task_symbol for igual ao symbol da tarefa e 
+    // remaining_computation for igual a 0
     // significa que acabou o periodo de uma tarefa e ela foi a ultima a executar
-    // limpa last_task_symbol
-    if ((task.absolute_period == sim_time) && (task.symbol == *last_task_symbol)) {
+    // limpa last_task_symbol para forcar uma troca de contexto na proxima iteração
+    if ((task.absolute_period == sim_time) && (task.symbol == *last_task_symbol) && (task.remaining_computation == 0)) {
       *last_task_symbol = ' ';
-	}
+	  }
 
     task.Reload(sim_time);
   }

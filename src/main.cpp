@@ -1,11 +1,8 @@
 #include "background_server/BackgroundServer.hpp"
 
 int main() {
-  BackgroundServer *bs = new BackgroundServer();
-
-  bs->StartServer();
-
-  delete bs;
+  BackgroundServer bs;
+  bs.StartServer();
 
   return 0;
 }

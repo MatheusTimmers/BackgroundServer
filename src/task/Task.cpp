@@ -1,4 +1,5 @@
 #include "Task.hpp"
+#include <iostream>
 
 std::string Task::ToString() const {
   std::ostringstream oss;
@@ -15,7 +16,7 @@ std::string Task::ToString() const {
 }
 
 void Task::Reload(int sim_time) {
-  if (this->absolute_period == sim_time) {
+  if ((this->absolute_period <= sim_time) && (this->remaining_computation == 0)) {
     this->remaining_computation = this->computation_time;
     this->absolute_period += this->period;
     this->absolute_deadline += + this->period;
